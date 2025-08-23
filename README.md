@@ -16,8 +16,8 @@ A smart chatbot for Current Trends in Software Engineering course materials buil
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/yourusername/ctse-chatbot
-cd ctse-chatbot
+git clone https://github.com/isurukumanayake/ctse-chatbot
+cd CTSE-chatbot
 ```
 
 ### 2. Install Dependencies
