@@ -4,8 +4,8 @@ from pathlib import Path
 from typing import List, Optional
 import tempfile
 
-from langchain.docstore.document import Document
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader, UnstructuredPowerPointLoader
 from langchain_community.document_loaders.word_document import UnstructuredWordDocumentLoader
 

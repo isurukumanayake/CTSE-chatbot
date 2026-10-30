@@ -1,7 +1,7 @@
 from typing import List
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
 from ..utils.logger import get_logger
 from config import Config
