@@ -28,7 +28,9 @@ class LLMHandler:
                 model=self.config.LLM_MODEL,
                 google_api_key=self.api_key,
                 temperature=self.config.LLM_TEMPERATURE,
-                max_output_tokens=self.config.LLM_MAX_OUTPUT_TOKENS
+                max_output_tokens=self.config.LLM_MAX_OUTPUT_TOKENS,
+                timeout=30,
+                max_retries=1,
             )
             self.logger.info(f"Initialized LLM: {self.config.LLM_MODEL}")
         except Exception as e:
@@ -81,12 +83,19 @@ Answer:
             
             # Extract content from response
             if hasattr(response, 'content'):
-                answer = response.content
+                content = response.content
             else:
-                answer = str(response)
-            
+                content = str(response)
+
+            # Newer Gemini models can return content as a list of parts
+            if isinstance(content, list):
+                content = "".join(
+                    part.get("text", "") if isinstance(part, dict) else str(part)
+                    for part in content
+                )
+
             self.logger.debug("Generated LLM response")
-            return answer.strip()
+            return content.strip()
             
         except Exception as e:
             self.logger.error(f"LLM generation failed: {e}")
