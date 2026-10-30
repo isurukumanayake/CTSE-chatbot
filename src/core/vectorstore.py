@@ -2,7 +2,7 @@ import time
 from pathlib import Path
 from typing import List, Optional
 
-from langchain.docstore.document import Document
+from langchain_core.documents import Document
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
