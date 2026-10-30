@@ -30,7 +30,7 @@ class LLMHandler:
                 temperature=self.config.LLM_TEMPERATURE,
                 max_output_tokens=self.config.LLM_MAX_OUTPUT_TOKENS,
                 timeout=30,
-                max_retries=1,
+                max_retries=2,
             )
             self.logger.info(f"Initialized LLM: {self.config.LLM_MODEL}")
         except Exception as e:
