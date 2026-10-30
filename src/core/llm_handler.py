@@ -22,20 +22,28 @@ class LLMHandler:
         self._initialize_prompt()
     
     def _initialize_llm(self):
-        """Initialize the LLM"""
+        """Initialize the primary and fallback LLMs"""
         try:
-            self.llm = ChatGoogleGenerativeAI(
-                model=self.config.LLM_MODEL,
-                google_api_key=self.api_key,
-                temperature=self.config.LLM_TEMPERATURE,
-                max_output_tokens=self.config.LLM_MAX_OUTPUT_TOKENS,
-                timeout=30,
-                max_retries=2,
-            )
+            self.llm = self._build_llm(self.config.LLM_MODEL)
             self.logger.info(f"Initialized LLM: {self.config.LLM_MODEL}")
+
+            self.fallback_llm = None
+            if getattr(self.config, "LLM_FALLBACK_MODEL", None):
+                self.fallback_llm = self._build_llm(self.config.LLM_FALLBACK_MODEL)
+                self.logger.info(f"Initialized fallback LLM: {self.config.LLM_FALLBACK_MODEL}")
         except Exception as e:
             self.logger.error(f"Failed to initialize LLM: {e}")
             raise
+
+    def _build_llm(self, model: str) -> ChatGoogleGenerativeAI:
+        return ChatGoogleGenerativeAI(
+            model=model,
+            google_api_key=self.api_key,
+            temperature=self.config.LLM_TEMPERATURE,
+            max_output_tokens=self.config.LLM_MAX_OUTPUT_TOKENS,
+            timeout=30,
+            max_retries=2,
+        )
     
     def _initialize_prompt(self):
         """Initialize the prompt template"""
@@ -78,9 +86,19 @@ Answer:
                 question=question
             )
             
-            # Generate response
-            response = self.llm.invoke(formatted_prompt)
-            
+            # Generate response, falling back to a secondary model if the
+            # primary one is unavailable or overloaded
+            try:
+                response = self.llm.invoke(formatted_prompt)
+            except Exception as primary_error:
+                if self.fallback_llm is None:
+                    raise
+                self.logger.warning(
+                    f"Primary LLM ({self.config.LLM_MODEL}) failed ({primary_error}); "
+                    f"retrying with fallback ({self.config.LLM_FALLBACK_MODEL})"
+                )
+                response = self.fallback_llm.invoke(formatted_prompt)
+
             # Extract content from response
             if hasattr(response, 'content'):
                 content = response.content
@@ -96,7 +114,7 @@ Answer:
 
             self.logger.debug("Generated LLM response")
             return content.strip()
-            
+
         except Exception as e:
             self.logger.error(f"LLM generation failed: {e}")
             return f"❌ Error generating response: {str(e)}"

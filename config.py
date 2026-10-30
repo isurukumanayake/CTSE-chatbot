@@ -37,6 +37,7 @@ class Config:
     
     # LLM Configuration
     LLM_MODEL = "gemini-3.8-flash"
+    LLM_FALLBACK_MODEL = "gemini-3.5-flash-lite"
     LLM_TEMPERATURE = 0.1
     LLM_MAX_OUTPUT_TOKENS = 1024
     
