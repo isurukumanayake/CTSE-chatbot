@@ -36,7 +36,7 @@ class Config:
         return None
     
     # LLM Configuration
-    LLM_MODEL = "gemini-1.5-flash"
+    LLM_MODEL = "gemini-2.5-flash"
     LLM_TEMPERATURE = 0.1
     LLM_MAX_OUTPUT_TOKENS = 1024
     
